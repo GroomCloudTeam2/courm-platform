@@ -1,0 +1,9 @@
+# Cluster-scoped resource - Deploy once at cluster level
+# kubectl apply -f cluster-resources/gatewayclass.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: istio
+spec:
+  controllerName: istio.io/gateway-controller
+  description: Istio-based gateway controller

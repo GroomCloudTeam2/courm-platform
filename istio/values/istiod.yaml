@@ -1,0 +1,16 @@
+# Istio 'istiod' chart values
+pilot:
+  autoscaleEnabled: true
+  autoscaleMin: 1
+  autoscaleMax: 3
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+# 필요 시 메쉬 기본 설정을 여기에 추가
+# meshConfig:
+#   accessLogFile: /dev/stdout

@@ -1,0 +1,2 @@
+# Istio 'base' chart values
+# - 보통 CRD/cluster-wide 기본 리소스만 설치하므로, 여기서는 기본값 그대로 둡니다.
