@@ -1,0 +1,19 @@
+ingress-nginx:
+  controller:
+    # ingress 위치
+    nodeSelector:
+      role: management
+
+    # ingressclass 설정
+    ingressClassResource:
+      name: nginx
+      enabled: true
+      default: false
+      controllerValue: "k8s.io/ingres-nginx"
+
+    # ALB 연결용 NodePost
+    service:
+      type: NodePort
+      nodePorts:
+        http: 30080
+        https: 30443
