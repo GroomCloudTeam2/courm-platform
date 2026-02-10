@@ -14,20 +14,7 @@ metadata:
 spec:
   gatewayClassName: istio
   listeners:
-    # ---------------------------
-    # 1. Dev 환경 리스너
-    # ---------------------------
-    - name: dev-http
-      port: 80
-      protocol: HTTP
-      hostname: "*.example.com"
-      allowedRoutes:
-        namespaces:
-          from: All
-    # ---------------------------
-    # 2. Prod 환경 리스너
-    # ---------------------------
-    - name: prod-http
+    - name: http
       port: 80
       protocol: HTTP
       hostname: "*.example.com"
