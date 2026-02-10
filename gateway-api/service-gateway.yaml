@@ -1,0 +1,36 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: service-gateway
+  namespace: istio-system
+  annotations:
+    networking.istio.io/service-type: "NodePort"
+
+    # Istio Gateway Pod 위치
+    proxy.istio.io/config: |
+      gatewayTopology:
+        nodeSelector:
+          role: service-app
+spec:
+  gatewayClassName: istio
+  listeners:
+    - # ---------------------------
+    - # 1. Dev 환경 리스너
+    - # ---------------------------
+    - name: dev-http
+      port: 80
+      protocol: HTTP
+      hostname: "*.example.com"
+      allowedRoutes:
+        namespaces:
+          from: All
+    - # ---------------------------
+    - # 2. Prod 환경 리스너
+    - # ---------------------------
+    - name: prod-http
+      port: 80
+      protocol: HTTP
+      hostname: "*.example.com"
+      allowedRoutes:
+        namespaces:
+          from: All
