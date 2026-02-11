@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alb-ingress-nginx-master
+  namespace: ingress-nginx
+  annotations:
+    kubernetes.io/ingress.class: alb
+
+    alb.ingress.kubernetes.io/group.name: "prod-platform-alb"
+    alb.ingress.kubernetes.io/group.order: "2"
+
+    # Nginx 헬스체크
+    alb.ingress.kubernetes.io/healthcheck-path: /healthz
+    alb.ingress.kubernetes.io/healthcheck-port: "10254"
+    alb.ingress.kubernetes.io/success-codes: "200"
+spec:
+  rules:
+    - http:
+        paths:
+          # /api가 아닌 모든 트래픽은 여기로 와서 Nginx에게 넘어감
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ingress-nginx-controller
+                port:
+                  number: 80
