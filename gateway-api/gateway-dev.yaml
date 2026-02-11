@@ -3,6 +3,9 @@ kind: Gateway
 metadata:
   name: dev-gw
   namespace: istio-system
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
   labels:
     env: dev
 spec:
