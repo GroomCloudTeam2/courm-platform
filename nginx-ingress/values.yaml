@@ -9,7 +9,7 @@ ingress-nginx:
       name: nginx
       enabled: true
       default: false
-      controllerValue: "k8s.io/ingres-nginx"
+      controllerValue: "k8s.io/ingress-nginx"
 
     # ALB 연결용 NodePost
     service:
