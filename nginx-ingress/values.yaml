@@ -11,7 +11,10 @@ ingress-nginx:
       default: false
       controllerValue: "k8s.io/ingress-nginx"
 
-    # ALB 연결용 NodePost
+    admissionWebhooks:
+      enabled: false
+
+    # ALB 연결용 NodePort
     service:
       type: NodePort
       nodePorts:
