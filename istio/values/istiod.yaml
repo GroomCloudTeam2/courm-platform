@@ -1,8 +1,39 @@
-# Istio 'istiod' chart values
 pilot:
+  # 1. Replica 다중화 설정
   autoscaleEnabled: true
-  autoscaleMin: 1
-  autoscaleMax: 3
+  autoscaleMin: 2  # 최소 2개 이상 유지
+  autoscaleMax: 5
+
+  # 2. 파드 분산 배치 설정
+  # 스케줄러가 파드를 서로 다른 노드와 가용 영역(AZ)에 분리하도록 설정
+  podAntiAffinityTermLabelSelector:
+    - key: app
+      operator: In
+      values:
+        - istiod
+  podAntiAffinityLabelSelector: []
+
+  # 실제 Affinity 설정
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - istiod
+          # 동일 노드에 뜨지 않게 방지
+          topologyKey: "kubernetes.io/hostname"
+        - labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - istiod
+          # 서로 다른 가용영역(AZ)에 배치되도록 설정
+          topologyKey: "topology.kubernetes.io/zone"
+
   resources:
     requests:
       cpu: 200m
@@ -10,7 +41,3 @@ pilot:
     limits:
       cpu: "1"
       memory: 1Gi
-
-# 필요 시 메쉬 기본 설정을 여기에 추가
-# meshConfig:
-#   accessLogFile: /dev/stdout
