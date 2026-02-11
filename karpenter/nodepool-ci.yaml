@@ -1,0 +1,27 @@
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: ci-build
+spec:
+  template:
+    metadata:
+      labels:
+        role: ci-build # Jenkins Agent 파드들이 사용할 라벨
+    spec:
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot"]
+        - key: topology.kubernetes.io/zone
+          operator: In
+          values: ["ap-northeast-2a"]
+      nodeClassRef:
+        group: karpenter.k8s.aws # v1에서는 group, kind 명시 권장
+        kind: EC2NodeClass
+        name: default
+  limits:
+    cpu: "50"
+    memory: 200Gi
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 30s

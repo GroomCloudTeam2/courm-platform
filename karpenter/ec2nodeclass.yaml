@@ -1,0 +1,16 @@
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: default
+spec:
+  amiSelectorTerms:
+    - alias: al2@latest
+  role: "courm-eks-prod-karpenter-node-20260211033935424700000029" # 테라폼에서 만든 노드 역할 이름
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: "courm-eks-prod"
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: "courm-eks-prod"
+  tags:
+    project: courm
