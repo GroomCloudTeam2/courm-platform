@@ -4,7 +4,7 @@ pilot:
 
   # 1. Replica 다중화 설정
   autoscaleEnabled: true
-  autoscaleMin: 1  # 최소 2개 이상 유지
+  autoscaleMin: 2  # 최소 2개 이상 유지
   autoscaleMax: 5
 
   # 2. 파드 분산 배치 설정
