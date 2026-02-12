@@ -1,4 +1,7 @@
 pilot:
+  nodeSelector:
+    role: management
+
   # 1. Replica 다중화 설정
   autoscaleEnabled: true
   autoscaleMin: 2  # 최소 2개 이상 유지
