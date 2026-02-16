@@ -1,0 +1,13 @@
+apiVersion: security.istio.io/v1
+kind: RequestAuthentication
+metadata:
+  name: jwt-cognito
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  jwtRules:
+    - issuer: "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_HmqfrWP3T"
+      jwksUri: "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_HmqfrWP3T.well-known/jwks.json"
+      forwardOriginalToken: true

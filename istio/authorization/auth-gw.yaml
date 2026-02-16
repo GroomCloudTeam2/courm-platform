@@ -1,0 +1,200 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: authz-gw-dev
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  action: ALLOW
+  rules:
+    # 0) (선택) 헬스는 항상 허용
+    - to:
+        - operation:
+            hosts:
+              - user-dev.example.com
+              - product-dev.example.com
+              - order-dev.example.com
+              - payment-dev.example.com
+              - cart-dev.example.com
+            paths:
+              - /health
+
+    # 1) Swagger/OpenAPI는 public
+    - to:
+        - operation:
+            hosts:
+              - user-dev.example.com
+              - product-dev.example.com
+              - order-dev.example.com
+              - payment-dev.example.com
+              - cart-dev.example.com
+            paths:
+              - /swagger-ui*
+              - /v3/api-docs*
+              - /swagger-resources*
+              - /swagger-ui.html
+              - /webjars*
+
+    # 2) Auth public (signup/login) - user 도메인만
+    - to:
+        - operation:
+            hosts: [user-dev.example.com]
+            paths:
+              - /api/v2/auth/signup
+              - /api/v2/auth/login
+
+    # 3) Product/Category public GET - product 도메인만
+    - to:
+        - operation:
+            hosts: [product-dev.example.com]
+            methods: ["GET"]
+            paths:
+              - /api/v2/products
+              - /api/v2/products/*
+              - /api/v2/categories
+              - /api/v2/categories/*
+
+    # 4) user-service (인증 필요) - user 도메인
+    - from:
+        - source:
+            requestPrincipals: ["*"]   # 토큰(인증) 존재해야 매칭
+      to:
+        - operation:
+            hosts: [user-dev.example.com]
+            paths:
+              - /api/v2/users*
+              - /api/v2/auth/logout
+
+    # 5) order-service (인증 필요) - order 도메인
+    - from:
+        - source:
+            requestPrincipals: ["*"]
+      to:
+        - operation:
+            hosts: [order-dev.example.com]
+            paths:
+              - /api/v2/orders*
+              - /api/v2/claims*
+
+    # 6) cart-service (인증 필요) - cart 도메인
+    - from:
+        - source:
+            requestPrincipals: ["*"]
+      to:
+        - operation:
+            hosts: [cart-dev.example.com]
+            paths:
+              - /api/v2/cart*
+
+    # 7) payment-service (인증 필요) - payment 도메인
+    - from:
+        - source:
+            requestPrincipals: ["*"]
+      to:
+        - operation:
+            hosts: [payment-dev.example.com]
+            paths:
+              - /api/v2/payments*
+
+    # 8) review-service (인증 필요) - product 도메인
+    - from:
+        - source:
+            requestPrincipals: ["*"]
+      to:
+        - operation:
+            hosts: [product-dev.example.com]
+            paths:
+              - /api/v2/reviews*
+
+    # -------------------------
+    # 역할 기반 (OWNER/MANAGER/MASTER)
+    # ※ Cognito "그룹 기반"이면 보통 claim 키가 cognito:groups
+    # -------------------------
+
+    # 9) OWNER only
+    - from:
+        - source:
+            requestPrincipals: ["*"]
+      to:
+        - operation:
+            hosts: [product-dev.example.com]
+            paths: ["/api/v2/owner*"]
+      when:
+        - key: request.auth.claims[cognito:groups]
+          values: ["OWNER"]
+
+    # 10) MANAGER or MASTER
+    - from:
+        - source:
+            requestPrincipals: ["*"]
+      to:
+        - operation:
+            hosts: [product-dev.example.com]
+            paths: ["/api/v2/manager/products*"]
+      when:
+        - key: request.auth.claims[cognito:groups]
+          values: ["MANAGER", "MASTER"]
+
+    # 11) MASTER only
+    - from:
+        - source:
+            requestPrincipals: ["*"]
+      to:
+        - operation:
+            hosts: [product-dev.example.com]
+            paths: ["/api/v2/master*"]
+      when:
+        - key: request.auth.claims[cognito:groups]
+          values: ["MASTER"]
+
+    # 12) admin-users (MANAGER/MASTER) - user 도메인
+    - from:
+        - source:
+            requestPrincipals: ["*"]
+      to:
+        - operation:
+            hosts: [user-dev.example.com]
+            paths:
+              - /api/v2/admin/users*
+              - /api/v2/admin/owners*
+      when:
+        - key: request.auth.claims[cognito:groups]
+          values: ["MANAGER", "MASTER"]
+
+    # 13) admin-managers (MASTER) - user 도메인
+    - from:
+        - source:
+            requestPrincipals: ["*"]
+      to:
+        - operation:
+            hosts: [user-dev.example.com]
+            paths: ["/api/v2/admin/managers*"]
+      when:
+        - key: request.auth.claims[cognito:groups]
+          values: ["MASTER"]
+
+    # 14) admin-claims (MANAGER/MASTER) - order 도메인
+    - from:
+        - source:
+            requestPrincipals: ["*"]
+      to:
+        - operation:
+            hosts: [order-dev.example.com]
+            paths: ["/api/v2/admin/claims*"]
+      when:
+        - key: request.auth.claims[cognito:groups]
+          values: ["MANAGER", "MASTER"]
+
+    # 15) review-admin (MANAGER/MASTER) - product 도메인
+    - from:
+        - source:
+            requestPrincipals: ["*"]
+      to:
+        - operation:
+            hosts: [product-dev.example.com]
+            paths: ["/admin/reviews*"]
+      when:
+        - key: request.auth.claims[cognito:groups]
+          values: ["MANAGER", "MASTER"]
