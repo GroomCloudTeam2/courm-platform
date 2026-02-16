@@ -10,7 +10,7 @@ metadata:
     alb.ingress.kubernetes.io/group.order: "1"
 
     alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/target-type: ip
 
     # Istio 헬스체크
     alb.ingress.kubernetes.io/healthcheck-path: /healthz/ready
