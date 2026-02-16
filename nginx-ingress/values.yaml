@@ -16,7 +16,7 @@ ingress-nginx:
 
     # ALB 연결용 NodePort
     service:
-      type: NodePort
-      nodePorts:
-        http: 30180
-        https: 30143
+      type: ClusterIP
+      ports:
+        http: 80
+        https: 443
