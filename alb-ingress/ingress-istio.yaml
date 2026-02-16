@@ -24,6 +24,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: service-gateway-istio
+                name: prod-gw-istio
                 port:
                   number: 80
