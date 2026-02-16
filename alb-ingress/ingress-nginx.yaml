@@ -8,6 +8,7 @@ metadata:
 
     alb.ingress.kubernetes.io/group.name: "prod-platform-alb"
     alb.ingress.kubernetes.io/group.order: "2"
+    alb.ingress.kubernetes.io/target-type: ip
 
     # Nginx 헬스체크
     alb.ingress.kubernetes.io/healthcheck-path: /healthz
